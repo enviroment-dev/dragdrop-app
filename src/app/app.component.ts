@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation, OnInit, Renderer2, RendererFactory2, Inject, Input, OnChanges } from '@angular/core';
+import { Component, ViewEncapsulation, OnInit, Renderer2, RendererFactory2, Inject, Input, OnChanges, HostListener } from '@angular/core';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { DOCUMENT } from '@angular/platform-browser';
 import $ from 'jquery';
@@ -51,6 +51,9 @@ export class AppComponent implements OnInit {
     this.menuList1.unshift($event);
     if (this.menuList1.length < 2) {
       this.toastr.info('Di chuyển hình !!', '', { timeOut: 5000 });
+      setTimeout(() => {
+        this.toastr.info('Nhấn delete để xóa !!', '', { timeOut: 5000 });
+      }, 2000);
     }
     if (this.menuList1.length > 1) {
       this.menuList1.forEach(element => {
@@ -162,6 +165,13 @@ export class AppComponent implements OnInit {
         that.draw();
       }
     });
+  }
+
+  @HostListener('window:keyup', ['$event'])
+  keyEvent(event: KeyboardEvent) {
+    if (event.keyCode === 46) {
+      this.menuList1.pop();
+    }
   }
 
 }
