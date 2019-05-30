@@ -9,6 +9,8 @@ export class MenuLeftComponent implements OnInit {
 
   @Output() draw = new EventEmitter<any[]>();
 
+
+  // Tạo mảng 4 hình
   public menuList = [
     {
       class: 'example-box aqua-gradient',
@@ -43,6 +45,7 @@ export class MenuLeftComponent implements OnInit {
   public drop(event: any) {
     const subEvent = event;
     subEvent.id = '';
+    // Bắt Output cho component cha
    this.draw.emit(subEvent);
   }
 
