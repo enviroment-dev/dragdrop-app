@@ -9,11 +9,13 @@ import { MDBBootstrapModule, ButtonsModule, WavesModule,
   InputsModule, CollapseModule } from 'angular-bootstrap-md';
 import { MenuLeftComponent } from './menu-left/menu-left.component';
 import { ToastrModule } from 'ngx-toastr';
+import { LoadingComponent } from './loading/loading.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    MenuLeftComponent
+    MenuLeftComponent,
+    LoadingComponent
   ],
   imports: [
     BrowserModule,

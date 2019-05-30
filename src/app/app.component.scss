@@ -12,33 +12,19 @@ html, body {
       padding: 0;
         height: 100%;
         width: 100%;
-        z-index: 1;
+        z-index: 999;
         top: 0;
         left: 0;
     }
     .content-body {
       height: 100%;
+      max-width: 100%;
+      padding: 0;
+      background-image: url('./../assets/image/floor-tile.png');
       #instructions {
         position: fixed !important;
         left: 50%;
       }
-      // #a, #b {
-      //   color: white;
-      //   text-align: center;
-      //   padding: 10px;
-      //   position: absolute;
-      //   width: 100px;
-      //   height: 40px;
-      //   left: 400px;
-      // }
-      // #a {
-      //   background-color: blue;
-      //   top: 20px;
-      // }
-      // #b {
-      //   background-color: red;
-      //   top: 150px;
-      // }
 
       .example-box {
         width: 100px;
@@ -49,6 +35,7 @@ html, body {
         color: rgba(0, 0, 0, 0.87);
         cursor: move;
         display: flex;
+        margin-left: 10px;
         justify-content: center;
         align-items: center;
         text-align: center;
@@ -61,8 +48,10 @@ html, body {
           0 2px 2px 0 rgba(0, 0, 0, 0.14),
           0 1px 5px 0 rgba(0, 0, 0, 0.12);
                #input1 {
-            width: 90%;
+             width: 100%;
+            margin: 0 auto;
         }
+
       }
     
       .example-box1 {
@@ -80,6 +69,7 @@ html, body {
         background: #fff;
         border-radius: 4px;
         position: relative;
+        margin-left: 10px;
         z-index: 1;
         transition: box-shadow 200ms cubic-bezier(0, 0, 0.2, 1);
         box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2),
@@ -88,14 +78,14 @@ html, body {
           #input2 {
             width: 90%;
         }
+
       }
     
       .example-box2 {
         width: 100px;
-        height: 0;
+        height: 100px !important;
         margin-top: 10px;
         margin-bottom: 20px;
-        // border: solid 1px #ccc;
         color: rgba(0, 0, 0, 0.87);
         cursor: move;
         display: flex;
@@ -105,11 +95,8 @@ html, body {
         background: #fff;
         border-radius: 4px;
         position: relative;
+        margin-left: 10px;
         z-index: 1;
-        // transition: box-shadow 200ms cubic-bezier(0, 0, 0.2, 1);
-        // box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2),
-        //   0 2px 2px 0 rgba(0, 0, 0, 0.14),
-        //   0 1px 5px 0 rgba(0, 0, 0, 0.12);
           border-right: 20px solid transparent;
           border-left: 20px solid transparent ;
           border-bottom: 100px solid rgba(244,67,54,0.7);
@@ -118,6 +105,13 @@ html, body {
             width: 100%;
             position: absolute;
         }
+
+        .draw-arrow {
+          top: 42px !important;
+          left: 10px;
+          position: absolute;
+        }
+
       }
     
       .example-box3 {
@@ -134,6 +128,7 @@ html, body {
         text-align: center;
         background: #fff;
         border-radius: 30px;
+        margin-left: 10px;
         position: relative;
         z-index: 1;
         transition: box-shadow 200ms cubic-bezier(0, 0, 0.2, 1);
@@ -145,105 +140,28 @@ html, body {
         }
       }
 
+      input {
+        color: black;
+        width: 100%;
+      }
 
-      // .example-box {
-      //   margin-top: 10px;
-      //     margin-bottom: 20px;
-      //   width: 15%;
-      //   height: 15%;
-      //    border: solid 1px #ccc;
-      //   cursor: move;
-      //   display: flex;
-      //   justify-content: center;
-      //   align-items: center;
-      //   text-align: center;
-      //   background: yellowgreen;
-      //   border-radius: 4px;
-      //   position: relative;
-      //   z-index: 1;
-      //   #input1 {
-      //       width: 90%;
-      //   }
-      // }
-
-      // .example-box1 {
-      //   margin-top: 10px;
-      //     margin-bottom: 20px;
-      //     width: 15%;
-      //     height: 15%;
-      //   cursor: move;
-      //   display: flex;
-      //   justify-content: center;
-      //   align-items: center;
-      //   text-align: center;
-      //   background: transparent !important;
-      //   position: relative;
-      //   z-index: 1;
-      //               border-left:  80px solid transparent !important;
-      //               border-right:  80px solid transparent !important;
-      //               border-bottom:  90px solid #7873f5;  
-      //               width: 0;
-      //               height: 0;
-      //               #input2 {
-      //       position: absolute;
-      //        width: 100px;
-      //         margin-top: 58px
-      //               }
-      // }
-
-      // .example-box2 {
-      //   margin-top: 10px;
-      //     margin-bottom: 20px;
-      //     width: 15%;
-      //     height: 15%;
-      //   cursor: move;
-      //   display: flex;
-      //   justify-content: center;
-      //   align-items: center;
-      //   text-align: center;
-      //   position: relative;
-      //   z-index: 1;
-      //   transform: skew(20deg);
-      //   background: red;
-      //   #input3 {
-      //       width: 90%;
-      //   }
-      // }
-
-      // .example-box3 {
-      //   margin-top: 10px;
-      //     margin-bottom: 20px;
-      //   cursor: move;
-      //   display: flex;
-      //   justify-content: center;
-      //   align-items: center;
-      //   text-align: center;
-      //   position: relative;
-      //   z-index: 1;
-      //   width: 0;
-      //   height: 0;
-      //   border: 80px solid transparent;
-      //   border-bottom-color: #ff4444;
-      //   position: relative;
-      //   top: -80px;
-      //   #input4 {
-      //       position: absolute; 
-      //       width: 100px; 
-      //       margin-top: 75px;
-      //   }
-      // }
-      // .example-box3::before {
-      //   content: '';
-      //   position: absolute;
-      //   left: -80px;
-      //   top: 80px;
-      //   width: 0;
-      //   height: 0;
-      //   border: 80px solid transparent;
-      //   border-top-color: #ff4444;
-      // }
     }
   }
+
+  .page-footer {
+    bottom: 0;
+    position: fixed;
+    width: 100%;
+    z-index: 888;
+    --higru:#1A2A3A;
+    background: var(--higru);  
+  }
+}
+
+/deep/.draw-arrow {
+  right: 20px;
+  bottom: 0;
+  position: absolute;
 }
 
 }

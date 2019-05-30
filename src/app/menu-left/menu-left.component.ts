@@ -12,25 +12,25 @@ export class MenuLeftComponent implements OnInit {
   public menuList = [
     {
       class: 'example-box aqua-gradient',
-      id: 'a',
+      id: '',
       idInput: 'input1',
       idText: 'form1',
     },
     {
       class: 'example-box1 purple-gradient',
-      id: 'b',
+      id: '',
       idInput: 'input2',
       idText: 'form2'
     },
     {
       class: 'example-box2 peach-gradient',
-      id: 'c',
+      id: '',
       idInput: 'input3',
       idText: 'form3'
     },
     {
       class: 'example-box3 blue-gradient',
-      id: 'd',
+      id: '',
       idInput: 'input4',
       idText: 'form4'
     },
@@ -41,7 +41,9 @@ export class MenuLeftComponent implements OnInit {
   }
 
   public drop(event: any) {
-   this.draw.emit(event);
+    const subEvent = event;
+    subEvent.id = '';
+   this.draw.emit(subEvent);
   }
 
 }
