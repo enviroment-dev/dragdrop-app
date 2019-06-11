@@ -16,25 +16,31 @@ export class MenuLeftComponent implements OnInit {
       class: 'example-box aqua-gradient',
       id: '',
       idInput: 'input1',
-      idText: 'form1',
+      idText: '',
     },
     {
       class: 'example-box1 purple-gradient',
       id: '',
       idInput: 'input2',
-      idText: 'form2'
+      idText: ''
     },
     {
       class: 'example-box2 peach-gradient',
       id: '',
       idInput: 'input3',
-      idText: 'form3'
+      idText: ''
     },
     {
       class: 'example-box3 blue-gradient',
       id: '',
       idInput: 'input4',
-      idText: 'form4'
+      idText: ''
+    },
+    {
+      class: 'example-box4',
+      id: '',
+      idInput: 'input5',
+      idText: ''
     },
   ];
   constructor() { }

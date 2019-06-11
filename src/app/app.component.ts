@@ -5,6 +5,8 @@ import $ from 'jquery';
 import 'jquery-ui/ui/widgets/draggable.js';
 import { interval } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
+import { saveAs } from 'file-saver';
+import * as moment from 'moment-timezone';
 
 @Component({
   selector: 'app-root',
@@ -33,6 +35,8 @@ export class AppComponent implements OnInit {
 
   public arrowLeft = [];
 
+  public listInput = [];
+
   constructor(
     public toastr: ToastrService
   ) {
@@ -52,9 +56,8 @@ export class AppComponent implements OnInit {
     }, 1000);
   }
 
-
   // Push hai hình trước khi vẽ
-  public dropImage(item) {
+  public dropImageBottom(item) {
     this.subClass.push(item.id);
     if (this.subClass.length > 1) {
       this.listClass.push({
@@ -64,7 +67,7 @@ export class AppComponent implements OnInit {
         idArrow: 'arrow' + this.listClass.length
       });
       // Gọi hàm vẽ mủi tên
-      this.draw();
+      this.draw('bottom');
     }
   }
 
@@ -73,6 +76,7 @@ export class AppComponent implements OnInit {
     const count = this.menuList1.length;
     // Tạo id động cho từng hình
     subEvent.id = 'a' + count;
+    subEvent.idText = 'form' + count;
     this.menuList1.unshift(JSON.parse(JSON.stringify(subEvent)));
     // Delay để gọi hàm Drag của Jquery
     setTimeout(() => {
@@ -87,7 +91,61 @@ export class AppComponent implements OnInit {
     }
   }
 
-  public draw() {
+  public exportJson() {
+    let dataKey: any;
+    let dataOption: any;
+    const exportJson = [];
+    for (const item of this.listClass) {
+      let obj;
+      // Lấy value từ id input tag
+       dataKey = $('#' + item.idDiv[0].replace('a', 'form').toString())[0].value;
+       dataOption = $('#' + item.idDiv[1].replace('a', 'form').toString())[0].value;
+      const index = this.isExist(exportJson, dataKey);
+      if (index === -1) {
+        obj = {
+           key: dataKey,
+          option: [dataOption]
+        };
+      } else {
+        (exportJson[index].option as string[]).push(dataOption);
+      }
+      if (obj) {
+        exportJson.push(obj);
+      }
+    }
+    if (exportJson.length <= 0) {
+      this.toastr.error('Chưa có dữ liệu !!');
+    } else if (dataKey === '' || dataOption === '') {
+      this.toastr.error('Vui lòng nhập dữ liệu !!');
+    } else {
+      const subArr = Object.assign({}, exportJson);
+      const json = JSON.stringify(subArr);
+      const blob = new Blob([json], {type: 'application/json'});
+      saveAs(blob, 'data' + this.convertDateFileName(new Date()) + '.json');
+    }
+
+
+  }
+
+  // Kiếm tra tồn tại của key
+  isExist(exportJson, key) {
+    let index = 0;
+    for (const item of exportJson) {
+      if (item && item.key === key.toString()) {
+        return index;
+      }
+      index++;
+    }
+    return -1;
+  }
+
+// Lấy tên file theo ngày giờ
+  public convertDateFileName(date: Date): string {
+    const value = moment(date);
+    return value.format('_YYYYMMDD' + 'hhmmss');
+  }
+
+  public draw(location) {
     // Có đủ hai điểm để vẽ mủi tên
     if (this.subClass.length > 1) {
       this.subClass = [];
@@ -109,15 +167,15 @@ export class AppComponent implements OnInit {
         for (let e = 0; e < this.classQuerySelector[i].length; e++) {
           if (e === 0) {
             // Vị trí x, y hình 1
-            this.posnALeft.push({
-              x: this.classQuerySelector[i][e].offsetLeft - 8,
-              y: this.classQuerySelector[i][e].offsetTop + this.classQuerySelector[i][e].offsetHeight
-            });
+              this.posnALeft.push({
+                x: this.classQuerySelector[i][e].offsetLeft - 5,
+                y: this.classQuerySelector[i][e].offsetTop + (this.classQuerySelector[i][e].offsetHeight / 2)
+              });
           } else {
             // Vị trí x, y hình 2
             this.posnBLeft.push({
-              x: this.classQuerySelector[i][e].offsetLeft - 8,
-              y: this.classQuerySelector[i][e].offsetTop - 8
+              x: this.classQuerySelector[i][e].offsetLeft - 5,
+              y: this.classQuerySelector[i][e].offsetTop + (this.classQuerySelector[i][e].offsetHeight / 2)
             });
           }
         }
@@ -188,12 +246,12 @@ export class AppComponent implements OnInit {
             arrowLeft.push(document.querySelector('#' + subArrow[i]));
             source.unsubscribe();
             const posnALeft = {
-              x: divA.offsetLeft - 8,
-              y: divA.offsetTop + divA.offsetHeight
+              x: divA.offsetLeft - 5,
+              y: divA.offsetTop + (divA.offsetHeight / 2)
             };
             const posnBLeft = {
-              x: divB.offsetLeft - 8,
-              y: divB.offsetTop - 8
+              x: divB.offsetLeft - 5,
+              y: divB.offsetTop + (divB.offsetHeight / 2)
             };
             const dStrLeft =
               'M' +
