@@ -5,6 +5,28 @@ html, body {
   height: 100vh;
 .container-fluid {
   height: 100%;
+  .import-json {
+    z-index: 9999999;
+    position: fixed;
+    bottom: 100px;
+    right: 0;
+  .sub-import-json {
+    position: relative;
+    bottom: 0;
+    right: 0;
+  }
+  .sub-import-json input[type=file] {
+    position: absolute;
+    opacity: 0;
+    outline: none;
+    display: block;
+    top: 0;
+    right: 0;
+    max-width: 100%;
+    min-height: 100%;
+    filter: alpha(opacity=0);
+  }
+}
   .export-json {
     z-index: 9999999;
     position: fixed;

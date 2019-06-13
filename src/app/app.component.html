@@ -1,6 +1,13 @@
 <app-loading *ngIf="isLoading"></app-loading>
 
 <div *ngIf="!isLoading" class="container-fluid">
+    <!-- <button class="import-json" type="file" (click)="importJson($event.target.files)" mdbBtn color="primary" mdbWavesEffect>IMPORT JSON</button> -->
+    <div class="import-json">
+    <span class="sub-import-json btn btn-primary">
+      IMPORT JSON <input type="file" (change)="importJson($event.target.files)">
+    </span>
+  </div>
+    <!-- <input class="import-json" type="file" change="importJson($event.target.files)"> -->
     <button class="export-json" type="button" (click)="exportJson()" mdbBtn color="primary" mdbWavesEffect>EXPORT JSON</button>
   <div class="row main">
     <div class="col-2 menu-left d-flex flex-column align-items-center">
@@ -8,9 +15,10 @@
   </div>
     <div class="col-10 content-body">
     <div *ngFor="let item of menuList1" style="position:absolute" 
+    [style.top.px]="item.positionTop" [style.left.px]="item.positionLeft"
     class="{{item.class}}" id="{{item.id}}">
         <div class="md-form form-sm" id ="{{item.idInput}}">
-            <input mdbInput type="text" id="{{item.idText}}" class="form-control form-control-sm" placeholder="input text">
+            <input mdbInput type="text" id="{{item.idText}}" value="{{ item.value }}" class="form-control form-control-sm" placeholder="input text">
           </div>
             <mdb-icon fas icon="plus" class="draw-arrow" (click)="dropImageBottom(item)"></mdb-icon>
       </div>

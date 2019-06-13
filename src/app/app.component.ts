@@ -7,6 +7,8 @@ import { interval } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 import { saveAs } from 'file-saver';
 import * as moment from 'moment-timezone';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogComponent } from './dialog/dialog.component';
 
 @Component({
   selector: 'app-root',
@@ -24,8 +26,12 @@ export class AppComponent implements OnInit {
   public subClass = [];
   public classQuerySelector = [];
 
-  public listClass = [];
+  public listClass: any = [];
+
+
   public menuList1 = [];
+  public subMenu = [];
+
   public listArrow = [];
   public listdivA = [];
   public listdivB = [];
@@ -37,16 +43,33 @@ export class AppComponent implements OnInit {
 
   public listInput = [];
 
+  public fileContent: any;
+
+  public positionTop: any;
+  public positionLeft: any;
+
   constructor(
-    public toastr: ToastrService
+    public toastr: ToastrService,
+    public dialog: MatDialog
   ) {
   }
   ngOnInit() {
     // Show loading
-    setTimeout(() =>  {
-    this.isLoading = false;
-    this.showMessage();
+    setTimeout(() => {
+      this.isLoading = false;
+      this.showMessage();
     }, 3000);
+  }
+
+  openDialog(data): void {
+    const dialogRef = this.dialog.open(DialogComponent, {
+      width: '600px',
+      data: data
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+    });
   }
 
   // Show Message
@@ -77,7 +100,8 @@ export class AppComponent implements OnInit {
     // Tạo id động cho từng hình
     subEvent.id = 'a' + count;
     subEvent.idText = 'form' + count;
-    this.menuList1.unshift(JSON.parse(JSON.stringify(subEvent)));
+    this.menuList1.push(JSON.parse(JSON.stringify(subEvent)));
+    this.subMenu.push(JSON.parse(JSON.stringify(subEvent)));
     // Delay để gọi hàm Drag của Jquery
     setTimeout(() => {
       this.initDraw();
@@ -91,23 +115,65 @@ export class AppComponent implements OnInit {
     }
   }
 
+  public importJson(fileList: FileList): void {
+    const file = fileList[0];
+    if (file.type !== 'application/json') {
+      this.toastr.error('Lỗi định dạng !!');
+    } else {
+      this.menuList1 = [];
+      this.listArrow = [];
+      const fileReader: FileReader = new FileReader();
+      const that = this;
+      fileReader.onloadend = function (x) {
+        that.fileContent = fileReader.result;
+        that.addImportEnd(JSON.parse(that.fileContent));
+      };
+      fileReader.readAsText(file);
+    }
+  }
+
+  public addImportEnd(data) {
+    this.openDialog(data);
+  }
+
   public exportJson() {
     let dataKey: any;
     let dataOption: any;
+    let positionKey: any;
+    let positionOption: any;
+
+    let classKey: any;
+    let classOption: any;
+
     const exportJson = [];
-    for (const item of this.listClass) {
+    for (let i = 0; i < this.listClass.length; i++) {
       let obj;
       // Lấy value từ id input tag
-       dataKey = $('#' + item.idDiv[0].replace('a', 'form').toString())[0].value;
-       dataOption = $('#' + item.idDiv[1].replace('a', 'form').toString())[0].value;
+      dataKey = $('#' + this.listClass[i].idDiv[0].replace('a', 'form').toString())[0].value;
+      positionKey = $('#' + this.listClass[i].idDiv[0]);
+      classKey = this.menuList1.filter(item => item.id === this.listClass[i].idDiv[0]);
+      classKey[0].positionTop = positionKey.position().top;
+      classKey[0].positionLeft = positionKey.position().left;
+      classKey[0].value = dataKey;
+      dataOption = $('#' + this.listClass[i].idDiv[1].replace('a', 'form').toString())[0].value;
+      positionOption = $('#' + this.listClass[i].idDiv[1]);
+      classOption = this.menuList1.filter(item => item.id === this.listClass[i].idDiv[1]);
+      classOption[0].positionTop = positionOption.position().top;
+      classOption[0].positionLeft = positionOption.position().left;
+      classOption[0].value = dataOption;
       const index = this.isExist(exportJson, dataKey);
       if (index === -1) {
         obj = {
-           key: dataKey,
-          option: [dataOption]
+          key: [
+            classKey.concat(dataKey)
+          ],
+          option: [
+            classOption.concat(dataOption)
+          ]
         };
       } else {
-        (exportJson[index].option as string[]).push(dataOption);
+        (exportJson[index].option).push(classOption.concat(dataOption)
+        );
       }
       if (obj) {
         exportJson.push(obj);
@@ -118,20 +184,19 @@ export class AppComponent implements OnInit {
     } else if (dataKey === '' || dataOption === '') {
       this.toastr.error('Vui lòng nhập dữ liệu !!');
     } else {
-      const subArr = Object.assign({}, exportJson);
-      const json = JSON.stringify(subArr);
-      const blob = new Blob([json], {type: 'application/json'});
+      exportJson.push(this.listClass);
+      // const subArr = Object.assign({}, exportJson);
+      const json = JSON.stringify(exportJson);
+      const blob = new Blob([json], { type: 'application/json' });
       saveAs(blob, 'data' + this.convertDateFileName(new Date()) + '.json');
     }
-
-
   }
 
   // Kiếm tra tồn tại của key
   isExist(exportJson, key) {
     let index = 0;
     for (const item of exportJson) {
-      if (item && item.key === key.toString()) {
+      if (item && item.key[0][1] === key.toString()) {
         return index;
       }
       index++;
@@ -139,7 +204,7 @@ export class AppComponent implements OnInit {
     return -1;
   }
 
-// Lấy tên file theo ngày giờ
+  // Lấy tên file theo ngày giờ
   public convertDateFileName(date: Date): string {
     const value = moment(date);
     return value.format('_YYYYMMDD' + 'hhmmss');
@@ -147,7 +212,7 @@ export class AppComponent implements OnInit {
 
   public draw(location) {
     // Có đủ hai điểm để vẽ mủi tên
-    if (this.subClass.length > 1) {
+   if (this.subClass.length > 1) {
       this.subClass = [];
       this.classQuerySelector = [];
       this.listArrow = [];
@@ -167,10 +232,10 @@ export class AppComponent implements OnInit {
         for (let e = 0; e < this.classQuerySelector[i].length; e++) {
           if (e === 0) {
             // Vị trí x, y hình 1
-              this.posnALeft.push({
-                x: this.classQuerySelector[i][e].offsetLeft - 5,
-                y: this.classQuerySelector[i][e].offsetTop + (this.classQuerySelector[i][e].offsetHeight / 2)
-              });
+            this.posnALeft.push({
+              x: this.classQuerySelector[i][e].offsetLeft - 5,
+              y: this.classQuerySelector[i][e].offsetTop + (this.classQuerySelector[i][e].offsetHeight / 2)
+            });
           } else {
             // Vị trí x, y hình 2
             this.posnBLeft.push({
@@ -194,19 +259,14 @@ export class AppComponent implements OnInit {
             for (let e = 0; e < this.arrowLeft.length; e++) {
               // Tạo vị trí của mủi tên
               const dStrLeft =
-              // 'M' bắt đầu vị trí mủi tên là vị trí x, y của hình 1
-              // https://www.w3.org/TR/SVG/paths.html
+                // 'M' bắt đầu vị trí mủi tên là vị trí x, y của hình 1
+                // https://www.w3.org/TR/SVG/paths.html
                 'M' +
                 (this.posnALeft[e].x + 55) + ',' + (this.posnALeft[e].y) + ' ' +
-                 // 'L' vẽ một đường thắng bắt đầu từ điểm 'M' đến điểm x, y của 'L'
+                // 'L' vẽ một đường thắng bắt đầu từ điểm 'M' đến điểm x, y của 'L'
                 'L' +
                 (this.posnBLeft[e].x + 55) + ',' + (this.posnBLeft[e].y);
-                // 'C' +
-                // (this.posnALeft[e].x + 55) + ',' + (this.posnALeft[e].y) + ' ' +
-                // (this.posnBLeft[e].x + 55) + ',' + (this.posnBLeft[e].y) + ' ' +
-                // (this.posnBLeft[e].x + 55) + ',' + (this.posnBLeft[e].y);
-
-                // setAttribute để vẽ mủi tên
+              // setAttribute để vẽ mủi tên
               this.arrowLeft[e].setAttribute('d', dStrLeft);
             }
           }
@@ -217,12 +277,26 @@ export class AppComponent implements OnInit {
 
   // Function vẽ lại hình khi drag khi đã vẽ mủi tên
   public subDrag(id) {
-    const subDiv: any = document.querySelector('#' + id);
-    const subHeight1 = subDiv.offsetTop + 50;
-    if ( subHeight1 > this.subHeight) {
-      this.subHeight = subHeight1;
-      this.heightSVG = this.subHeight + 'px';
+    const subListClass = [];
+    const subOffsetTop = [];
+    if (this.listArrow.length > 0) {
+    for (let i = 0; i < this.listClass.length; i++) {
+      for (let e = 0; e < this.listClass[i].idDiv.length; e++) {
+        const isExit = subListClass.includes(this.listClass[i].idDiv[e]);
+        if (!isExit) {
+          subListClass.push(this.listClass[i].idDiv[e]);
+          const offsetTop: any = document.querySelector('#' + this.listClass[i].idDiv[e]);
+          subOffsetTop.push(offsetTop.offsetTop);
+        }
+      }
     }
+    const subHeightSVG = subOffsetTop.sort((a, b) => a > b ? -1 : 1);
+    this.heightSVG = subHeightSVG[0] + 100 + 'px';
+  }
+
+    const abc = $('#' + id);
+    this.positionTop = abc.position().top;
+    this.positionLeft = abc.position().left;
     if (this.listArrow.length > 0) {
       const avgDiv = [];
       const subArrow = [];
@@ -234,7 +308,6 @@ export class AppComponent implements OnInit {
           }
         });
       });
-
       const arrowLeft = [];
       for (let i = 0; i < subArrow.length; i++) {
         const divA: any = document.querySelector('#' + avgDiv[i][0]);
@@ -258,10 +331,6 @@ export class AppComponent implements OnInit {
               (posnALeft.x + 55) + ',' + (posnALeft.y) + ' ' +
               'L' +
               (posnBLeft.x + 55) + ',' + (posnBLeft.y);
-              // 'C' +
-              // (posnALeft.x + 55) + ',' + (posnALeft.y) + ' ' +
-              // (posnBLeft.x + 55) + ',' + (posnBLeft.y) + ' ' +
-              // (posnBLeft.x + 55) + ',' + (posnBLeft.y);
             arrowLeft[i].setAttribute('d', dStrLeft);
           }
         });
