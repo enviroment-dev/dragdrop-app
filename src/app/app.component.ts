@@ -134,6 +134,34 @@ export class AppComponent implements OnInit {
 
   public addImportEnd(data) {
     this.openDialog(data);
+    const abc = [];
+    if (data.length <= 0) {
+      this.toastr.error('Lỗi định dạng !!');
+    } else {
+    for (let i = 0; i < (data.length - 1); i++) {
+      const exitKey = this.isExistImport(abc, data[i].key[0][0].id);
+      if (exitKey === -1) {
+        abc.push(data[i].key[0][0]);
+      }
+      for (let e = 0; e < data[i].option.length; e++) {
+        const exitOption = this.isExistImport(abc, data[i].option[e][0].id);
+        if (exitOption === -1) {
+          abc.push(data[i].option[e][0]);
+        }
+      }
+    }
+  }
+
+    this.menuList1 = abc;
+    this.listClass = data[data.length - 1];
+    if (this.menuList1.length <= 0) {
+      this.toastr.error('Lỗi định dạng !!');
+    } else {
+      setTimeout(() => {
+        this.initDraw();
+        this.draw('importJSON');
+      }, 500);
+    }
   }
 
   public exportJson() {
@@ -192,6 +220,17 @@ export class AppComponent implements OnInit {
     }
   }
 
+  isExistImport(exportJson, key) {
+    let index = 0;
+    for (const item of exportJson) {
+      if (item && item.id === key.toString()) {
+        return index;
+      }
+      index++;
+    }
+    return -1;
+  }
+
   // Kiếm tra tồn tại của key
   isExist(exportJson, key) {
     let index = 0;
@@ -213,6 +252,66 @@ export class AppComponent implements OnInit {
   public draw(location) {
     // Có đủ hai điểm để vẽ mủi tên
    if (this.subClass.length > 1) {
+      this.subClass = [];
+      this.classQuerySelector = [];
+      this.listArrow = [];
+      this.posnALeft = [];
+      this.posnBLeft = [];
+      for (let i = 0; i < this.listClass.length; i++) {
+        this.listArrow.push(this.listClass[i].idArrow);
+        const subClassQuerySelector = [];
+        for (let e = 0; e < this.listClass[i].idDiv.length; e++) {
+          // Push querySelector id của hai hình để lấy vị trí
+          subClassQuerySelector.push(document.querySelector('#' + this.listClass[i].idDiv[e]));
+        }
+        this.classQuerySelector.push(subClassQuerySelector);
+      }
+      // Chạy for lấy 2 vị trí x và y của hai hình để xác định vị trí vẽ mủi tên
+      for (let i = 0; i < this.classQuerySelector.length; i++) {
+        for (let e = 0; e < this.classQuerySelector[i].length; e++) {
+          if (e === 0) {
+            // Vị trí x, y hình 1
+            this.posnALeft.push({
+              x: this.classQuerySelector[i][e].offsetLeft - 5,
+              y: this.classQuerySelector[i][e].offsetTop + (this.classQuerySelector[i][e].offsetHeight / 2)
+            });
+          } else {
+            // Vị trí x, y hình 2
+            this.posnBLeft.push({
+              x: this.classQuerySelector[i][e].offsetLeft - 5,
+              y: this.classQuerySelector[i][e].offsetTop + (this.classQuerySelector[i][e].offsetHeight / 2)
+            });
+          }
+        }
+      }
+      this.arrowLeft = [];
+      // Chạy for cho nhiều mủi tên của nhiều cặp hình
+      for (let i = 0; i < this.listArrow.length; i++) {
+        let subArrow: any;
+        // interval 0,5s để html kịp zen mủi tên
+        const source = interval(500).subscribe(() => {
+          // lấy querySelector của mủi tên
+          subArrow = document.querySelector('#' + this.listArrow[i]);
+          if (subArrow) {
+            this.arrowLeft.push(document.querySelector('#' + this.listArrow[i]));
+            source.unsubscribe();
+            for (let e = 0; e < this.arrowLeft.length; e++) {
+              // Tạo vị trí của mủi tên
+              const dStrLeft =
+                // 'M' bắt đầu vị trí mủi tên là vị trí x, y của hình 1
+                // https://www.w3.org/TR/SVG/paths.html
+                'M' +
+                (this.posnALeft[e].x + 55) + ',' + (this.posnALeft[e].y) + ' ' +
+                // 'L' vẽ một đường thắng bắt đầu từ điểm 'M' đến điểm x, y của 'L'
+                'L' +
+                (this.posnBLeft[e].x + 55) + ',' + (this.posnBLeft[e].y);
+              // setAttribute để vẽ mủi tên
+              this.arrowLeft[e].setAttribute('d', dStrLeft);
+            }
+          }
+        });
+      }
+    } else if (location === 'importJSON') {
       this.subClass = [];
       this.classQuerySelector = [];
       this.listArrow = [];
@@ -365,6 +464,8 @@ export class AppComponent implements OnInit {
   keyEvent(event: KeyboardEvent) {
     if (event.keyCode === 46) {
       this.menuList1.pop();
+      this.listArrow.pop();
+      this.listClass.pop();
     }
   }
 

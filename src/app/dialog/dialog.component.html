@@ -4,6 +4,6 @@
   <textarea name="" id="text-json" cols="30" rows="10">{{ data | json }}</textarea>
 </div>
 <div mat-dialog-actions>
-  <button class="export-json" type="button" mdbBtn color="primary" mdbWavesEffect>OK</button>
+  <button class="export-json" type="button" (click)="close()" mdbBtn color="primary" mdbWavesEffect>OK</button>
 </div>
 

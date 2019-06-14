@@ -1,14 +1,29 @@
 <app-loading *ngIf="isLoading"></app-loading>
 
 <div *ngIf="!isLoading" class="container-fluid">
-    <!-- <button class="import-json" type="file" (click)="importJson($event.target.files)" mdbBtn color="primary" mdbWavesEffect>IMPORT JSON</button> -->
     <div class="import-json">
-    <span class="sub-import-json btn btn-primary">
+    <!-- <span class="sub-import-json btn btn-primary">
       IMPORT JSON <input type="file" (change)="importJson($event.target.files)">
-    </span>
+    </span> -->
+    <div id="circularMenu" class="circular-menu">
+
+      <a class="floating-btn" onclick="document.getElementById('circularMenu').classList.toggle('active');">
+        <i class="fa fa-plus"></i>
+      </a>
+    
+      <menu class="items-wrapper">
+        <a href="#" [hidden]="true" class="menu-item fa fa-facebook"></a>
+        <a href="#" class="menu-item"> <span class="sub-import-json">
+          IM<input type="file" (change)="importJson($event.target.files)">
+        </span></a>
+        <a href="#" (click)="exportJson()" class="menu-item">EX</a>
+        <a href="#" [hidden]="true" class="menu-item fa fa-linkedin"></a>
+      </menu>
+    
+    </div>
   </div>
-    <!-- <input class="import-json" type="file" change="importJson($event.target.files)"> -->
-    <button class="export-json" type="button" (click)="exportJson()" mdbBtn color="primary" mdbWavesEffect>EXPORT JSON</button>
+
+    <!-- <button class="export-json" type="button" (click)="exportJson()" mdbBtn color="primary" mdbWavesEffect>EXPORT JSON</button> -->
   <div class="row main">
     <div class="col-2 menu-left d-flex flex-column align-items-center">
 <app-menu-left style="width: 100%; height: 100%;" (draw)="drop($event)"></app-menu-left>

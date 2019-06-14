@@ -15,4 +15,8 @@ export class DialogComponent implements OnInit {
     console.log(this.data);
   }
 
+  public close() {
+    this.dialogRef.close();
+  }
+
 }
