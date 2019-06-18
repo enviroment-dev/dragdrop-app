@@ -63,7 +63,8 @@ html, body {
     }
     
     .circular-menu.active:after {
-      transform: scale3d(3.5, 3.5, 1);
+      // transform: scale3d(3.5, 3.5, 1);
+      transform: scale3d(4.5, 4.5, 1);
       transition-timing-function: cubic-bezier(.68, 1.55, .265, 1);
     }
     
@@ -99,19 +100,23 @@ html, body {
     }
     
     .circular-menu.active .menu-item:nth-child(1) {
-      transform: translate3d(1em,-7em,0);
+      // transform: translate3d(1em,-7em,0);
+      transform: translate3d(0em, -5.5em, 0);
+
     }
     
     .circular-menu.active .menu-item:nth-child(2) {
-      transform: translate3d(-1em,-3.5em,0);
+      // transform: translate3d(-1em,-3.5em,0);
+      transform: translate3d(-3em, -4.8em, 0);
     }
     
     .circular-menu.active .menu-item:nth-child(3) {
-      transform: translate3d(-4em,-0.2em,0);
+      // transform: translate3d(-4em,-0.2em,0);
+      transform: translate3d(-5em, -2.5em, 0);
     }
     
     .circular-menu.active .menu-item:nth-child(4) {
-      transform: translate3d(-7em,1em,0);
+      transform: translate3d(-5.5em, 0.5em, 0);
     }
     
     /**
@@ -364,6 +369,11 @@ html, body {
   right: 20px;
   bottom: 0;
   position: absolute;
+}
+
+.disabled {
+  pointer-events: none;
+  opacity: 0.5;
 }
 
 }

@@ -6,7 +6,7 @@ import { AppComponent } from './app.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import { MDBBootstrapModule, ButtonsModule, WavesModule,
-  InputsModule, CollapseModule, ModalModule } from 'angular-bootstrap-md';
+  InputsModule, CollapseModule, ModalModule, IconsModule } from 'angular-bootstrap-md';
 import { MenuLeftComponent } from './menu-left/menu-left.component';
 import { ToastrModule } from 'ngx-toastr';
 import { LoadingComponent } from './loading/loading.component';
@@ -29,7 +29,8 @@ import {MatDialogModule} from '@angular/material/dialog';
     DragDropModule,
     MDBBootstrapModule.forRoot(),
     ToastrModule.forRoot(),
-    ButtonsModule, WavesModule, CollapseModule, InputsModule
+    ButtonsModule, WavesModule, CollapseModule, InputsModule,
+    IconsModule
   ],
   providers: [],
   entryComponents: [DialogComponent],

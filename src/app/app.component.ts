@@ -44,9 +44,9 @@ export class AppComponent implements OnInit {
   public listInput = [];
 
   public fileContent: any;
-
   public positionTop: any;
   public positionLeft: any;
+  public enableDeleteArrow = false;
 
   constructor(
     public toastr: ToastrService,
@@ -83,12 +83,24 @@ export class AppComponent implements OnInit {
   public dropImageBottom(item) {
     this.subClass.push(item.id);
     if (this.subClass.length > 1) {
-      this.listClass.push({
-        // idDiv: 2 id của hai điểm
-        idDiv: this.subClass,
-        // idArrow: 2 điểm có một mủi tên
-        idArrow: 'arrow' + this.listClass.length
-      });
+      let count: any;
+      if (this.listArrow.length <= 0) {
+        count = 0;
+        this.listClass.push({
+          idDiv: this.subClass,
+          idArrow: 'arrow' + count
+        });
+      } else {
+        const subCount = this.listArrow[this.listArrow.length - 1];
+        count = subCount.split('arrow');
+        this.listClass.push({
+          // idDiv: 2 id của hai điểm
+          idDiv: this.subClass,
+          // idArrow: 2 điểm có một mủi tên
+          // idArrow: 'arrow' + this.listClass.length
+          idArrow: 'arrow' + (+count[1] + 1)
+        });
+      }
       // Gọi hàm vẽ mủi tên
       this.draw('bottom');
     }
@@ -134,25 +146,25 @@ export class AppComponent implements OnInit {
 
   public addImportEnd(data) {
     this.openDialog(data);
-    const abc = [];
+    const subData = [];
     if (data.length <= 0) {
       this.toastr.error('Lỗi định dạng !!');
     } else {
-    for (let i = 0; i < (data.length - 1); i++) {
-      const exitKey = this.isExistImport(abc, data[i].key[0][0].id);
-      if (exitKey === -1) {
-        abc.push(data[i].key[0][0]);
-      }
-      for (let e = 0; e < data[i].option.length; e++) {
-        const exitOption = this.isExistImport(abc, data[i].option[e][0].id);
-        if (exitOption === -1) {
-          abc.push(data[i].option[e][0]);
+      for (let i = 0; i < (data.length - 1); i++) {
+        const exitKey = this.isExistImport(subData, data[i].key[0][0].id);
+        if (exitKey === -1) {
+          subData.push(data[i].key[0][0]);
+        }
+        for (let e = 0; e < data[i].option.length; e++) {
+          const exitOption = this.isExistImport(subData, data[i].option[e][0].id);
+          if (exitOption === -1) {
+            subData.push(data[i].option[e][0]);
+          }
         }
       }
     }
-  }
 
-    this.menuList1 = abc;
+    this.menuList1 = subData;
     this.listClass = data[data.length - 1];
     if (this.menuList1.length <= 0) {
       this.toastr.error('Lỗi định dạng !!');
@@ -251,7 +263,7 @@ export class AppComponent implements OnInit {
 
   public draw(location) {
     // Có đủ hai điểm để vẽ mủi tên
-   if (this.subClass.length > 1) {
+    if (this.subClass.length > 1) {
       this.subClass = [];
       this.classQuerySelector = [];
       this.listArrow = [];
@@ -379,23 +391,23 @@ export class AppComponent implements OnInit {
     const subListClass = [];
     const subOffsetTop = [];
     if (this.listArrow.length > 0) {
-    for (let i = 0; i < this.listClass.length; i++) {
-      for (let e = 0; e < this.listClass[i].idDiv.length; e++) {
-        const isExit = subListClass.includes(this.listClass[i].idDiv[e]);
-        if (!isExit) {
-          subListClass.push(this.listClass[i].idDiv[e]);
-          const offsetTop: any = document.querySelector('#' + this.listClass[i].idDiv[e]);
-          subOffsetTop.push(offsetTop.offsetTop);
+      for (let i = 0; i < this.listClass.length; i++) {
+        for (let e = 0; e < this.listClass[i].idDiv.length; e++) {
+          const isExit = subListClass.includes(this.listClass[i].idDiv[e]);
+          if (!isExit) {
+            subListClass.push(this.listClass[i].idDiv[e]);
+            const offsetTop: any = document.querySelector('#' + this.listClass[i].idDiv[e]);
+            subOffsetTop.push(offsetTop.offsetTop);
+          }
         }
       }
+      const subHeightSVG = subOffsetTop.sort((a, b) => a > b ? -1 : 1);
+      this.heightSVG = subHeightSVG[0] + 100 + 'px';
     }
-    const subHeightSVG = subOffsetTop.sort((a, b) => a > b ? -1 : 1);
-    this.heightSVG = subHeightSVG[0] + 100 + 'px';
-  }
 
-    const abc = $('#' + id);
-    this.positionTop = abc.position().top;
-    this.positionLeft = abc.position().left;
+    const subData = $('#' + id);
+    this.positionTop = subData.position().top;
+    this.positionLeft = subData.position().left;
     if (this.listArrow.length > 0) {
       const avgDiv = [];
       const subArrow = [];
@@ -457,6 +469,38 @@ export class AppComponent implements OnInit {
     });
   }
 
+  public clearAll() {
+    try {
+      this.menuList1 = [];
+      this.listArrow = [];
+      this.listClass = [];
+      this.enableDeleteArrow = false;
+      this.toastr.success('Xóa tất cả thành công !!');
+    } catch (error) {
+      this.toastr.error('Xóa tất cả thất bại !!');
+    }
+  }
+
+  public clearArrow(params) {
+    this.toastr.info('Click vào mủi tên muốn xóa !!');
+    this.enableDeleteArrow = true;
+    console.log({
+      0: this.listArrow,
+      1: this.menuList1,
+      2: this.listClass
+    });
+  }
+
+  public clickArrow(item) {
+    if (this.enableDeleteArrow === true) {
+      for (let i = 0; i < this.listArrow.length; i++) {
+        if (this.listArrow[i] === item) {
+          this.listArrow.splice(i, 1);
+          this.listClass.splice(i, 1);
+        }
+      }
+    }
+  }
 
   // Bắt sự kiện nút delete để xóa hình
   // Sẽ bắt sự kiện xóa mủi tên sau
