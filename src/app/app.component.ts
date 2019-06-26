@@ -1,4 +1,7 @@
-import { Component, ViewEncapsulation, OnInit, Renderer2, RendererFactory2, Inject, Input, OnChanges, HostListener } from '@angular/core';
+import {
+  Component, ViewEncapsulation, OnInit,
+  Renderer2, RendererFactory2, Inject, Input, OnChanges, HostListener, ViewChild
+} from '@angular/core';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { DOCUMENT } from '@angular/platform-browser';
 import $ from 'jquery';
@@ -9,6 +12,8 @@ import { saveAs } from 'file-saver';
 import * as moment from 'moment-timezone';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogComponent } from './dialog/dialog.component';
+import { ModalDirective } from 'angular-bootstrap-md';
+import { ProgessService } from './progess-bar/progess.service';
 
 @Component({
   selector: 'app-root',
@@ -17,6 +22,7 @@ import { DialogComponent } from './dialog/dialog.component';
   encapsulation: ViewEncapsulation.None
 })
 export class AppComponent implements OnInit {
+  @ViewChild('basicModal') public showModalOnClick: ModalDirective;
   public isLoading = true;
   public drawImage: any;
   public subHeight = 0;
@@ -50,7 +56,8 @@ export class AppComponent implements OnInit {
 
   constructor(
     public toastr: ToastrService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private progress: ProgessService
   ) {
   }
   ngOnInit() {
@@ -59,17 +66,6 @@ export class AppComponent implements OnInit {
       this.isLoading = false;
       this.showMessage();
     }, 3000);
-  }
-
-  openDialog(data): void {
-    const dialogRef = this.dialog.open(DialogComponent, {
-      width: '600px',
-      data: data
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
-    });
   }
 
   // Show Message
@@ -145,11 +141,11 @@ export class AppComponent implements OnInit {
   }
 
   public addImportEnd(data) {
-    this.openDialog(data);
     const subData = [];
     if (data.length <= 0) {
       this.toastr.error('Lỗi định dạng !!');
     } else {
+      this.progress.show();
       for (let i = 0; i < (data.length - 1); i++) {
         const exitKey = this.isExistImport(subData, data[i].key[0][0].id);
         if (exitKey === -1) {
@@ -172,6 +168,7 @@ export class AppComponent implements OnInit {
       setTimeout(() => {
         this.initDraw();
         this.draw('importJSON');
+        // this.progress.hide();
       }, 500);
     }
   }
@@ -205,15 +202,14 @@ export class AppComponent implements OnInit {
       if (index === -1) {
         obj = {
           key: [
-            classKey.concat(dataKey)
+            classKey
           ],
           option: [
-            classOption.concat(dataOption)
+            classOption
           ]
         };
       } else {
-        (exportJson[index].option).push(classOption.concat(dataOption)
-        );
+        (exportJson[index].option).push(classOption);
       }
       if (obj) {
         exportJson.push(obj);
@@ -247,7 +243,7 @@ export class AppComponent implements OnInit {
   isExist(exportJson, key) {
     let index = 0;
     for (const item of exportJson) {
-      if (item && item.key[0][1] === key.toString()) {
+      if (item && item.key[0][0].value === key.toString()) {
         return index;
       }
       index++;
@@ -384,6 +380,7 @@ export class AppComponent implements OnInit {
         });
       }
     }
+    this.progress.hide();
   }
 
   // Function vẽ lại hình khi drag khi đã vẽ mủi tên
@@ -481,17 +478,15 @@ export class AppComponent implements OnInit {
     }
   }
 
-  public clearArrow(params) {
-    this.toastr.info('Click vào mủi tên muốn xóa !!');
+  public openDialog(item) {
+    localStorage.setItem('arrow', item);
+   this.showModalOnClick.show();
     this.enableDeleteArrow = true;
-    console.log({
-      0: this.listArrow,
-      1: this.menuList1,
-      2: this.listClass
-    });
   }
 
-  public clickArrow(item) {
+  public clickArrow() {
+    this.showModalOnClick.hide();
+    const item = localStorage.getItem('arrow');
     if (this.enableDeleteArrow === true) {
       for (let i = 0; i < this.listArrow.length; i++) {
         if (this.listArrow[i] === item) {
@@ -500,6 +495,7 @@ export class AppComponent implements OnInit {
         }
       }
     }
+    localStorage.clear();
   }
 
   // Bắt sự kiện nút delete để xóa hình
@@ -508,8 +504,8 @@ export class AppComponent implements OnInit {
   keyEvent(event: KeyboardEvent) {
     if (event.keyCode === 46) {
       this.menuList1.pop();
-      this.listArrow.pop();
-      this.listClass.pop();
+      // this.listArrow.pop();
+      // this.listClass.pop();
     }
   }
 

@@ -12,13 +12,15 @@ import { ToastrModule } from 'ngx-toastr';
 import { LoadingComponent } from './loading/loading.component';
 import { DialogComponent } from './dialog/dialog.component';
 import {MatDialogModule} from '@angular/material/dialog';
+import { ProgessBarComponent } from './progess-bar/progess-bar.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     MenuLeftComponent,
     LoadingComponent,
-    DialogComponent
+    DialogComponent,
+    ProgessBarComponent
   ],
   imports: [
     MatDialogModule,
